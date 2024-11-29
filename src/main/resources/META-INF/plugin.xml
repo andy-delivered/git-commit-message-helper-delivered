@@ -24,17 +24,17 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <applicationService
-                serviceImplementation="com.fulinlin.storage.GitCommitMessageHelperSettings"/>
+                serviceImplementation="com.andy.storage.GitCommitMessageHelperSettings"/>
         <projectService
-                serviceImplementation="com.fulinlin.storage.GitCommitMessageStorage"/>
+                serviceImplementation="com.andy.storage.GitCommitMessageStorage"/>
 
         <applicationConfigurable groupId="null"
                                  id="plugins.gitcommitmessagehelper"
                                  displayName="GitCommitMessageHelper"
-                                 instance="com.fulinlin.configurable.CentralSettingConfigurable"/>
+                                 instance="com.andy.configurable.CentralSettingConfigurable"/>
 
         <applicationConfigurable
-                instance="com.fulinlin.configurable.TemplateConfigurable"
+                instance="com.andy.configurable.TemplateConfigurable"
                 id="plugins.gitcommitmessagehelper.template"
                 groupId="plugins.gitcommitmessagehelper" displayName="Commit Template"/>
 
@@ -45,7 +45,7 @@
 
 
     <actions>
-        <action id="Commit.Button" class="com.fulinlin.action.CreateCommitAction"
+        <action id="Commit.Button" class="com.andy.action.CreateCommitAction"
                 text="Create Commit Message"
                 description="Create commit message"
                 icon="PluginIcons.EDIT">
