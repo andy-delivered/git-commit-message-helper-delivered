@@ -4,7 +4,9 @@ import com.andy.constant.GitCommitConstants;
 import com.andy.localization.PluginBundle;
 import com.andy.model.CentralSettings;
 import com.andy.model.DataSettings;
+import com.andy.model.JiraKeyAlias;
 import com.andy.model.TypeAlias;
+import com.andy.model.enums.JiraKeyDisplayStyleEnum;
 import com.andy.model.enums.TypeDisplayStyleEnum;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -77,6 +79,8 @@ public class GitCommitMessageHelperSettings implements PersistentStateComponent<
     private void loadDefaultCentralSettings() {
         centralSettings = new CentralSettings();
         try {
+            centralSettings.setJiraKeyDisplayStyle(JiraKeyDisplayStyleEnum.CHECKBOX);
+            centralSettings.setJiraKeyDisplayNumber(-1);
             centralSettings.setTypeDisplayStyle(TypeDisplayStyleEnum.CHECKBOX);
             centralSettings.setTypeDisplayNumber(-1);
             centralSettings.setSkipCiDefaultValue("[skip ci]");
@@ -85,7 +89,7 @@ public class GitCommitMessageHelperSettings implements PersistentStateComponent<
             CentralSettings.Hidden hidden = new CentralSettings.Hidden();
             centralSettings.setHidden(hidden);
             centralSettings.getHidden().setType(Boolean.FALSE);
-            centralSettings.getHidden().setScope(Boolean.FALSE);
+            centralSettings.getHidden().setJiraKeyNumber(Boolean.FALSE);
             centralSettings.getHidden().setSubject(Boolean.FALSE);
             centralSettings.getHidden().setBody(Boolean.FALSE);
             centralSettings.getHidden().setClosed(Boolean.FALSE);
@@ -101,6 +105,10 @@ public class GitCommitMessageHelperSettings implements PersistentStateComponent<
         dataSettings = new DataSettings();
         try {
             dataSettings.setTemplate(GitCommitConstants.DEFAULT_TEMPLATE);
+
+            List<JiraKeyAlias> jiraKeyAliases = getJiraKeyAliases();
+            dataSettings.setJiraKeyAliases(jiraKeyAliases);
+
             List<TypeAlias> typeAliases = getTypeAliases();
             dataSettings.setTypeAliases(typeAliases);
             List<String> skipCis = getSkipCis();
@@ -114,6 +122,12 @@ public class GitCommitMessageHelperSettings implements PersistentStateComponent<
         if (dataSettings.getTemplate() == null) {
             dataSettings.setTemplate(GitCommitConstants.DEFAULT_TEMPLATE);
         }
+
+        if (dataSettings.getJiraKeyAliases() == null) {
+            List<JiraKeyAlias> jiraKeyAliases = getJiraKeyAliases();
+            dataSettings.setJiraKeyAliases(jiraKeyAliases);
+        }
+
         if (dataSettings.getTypeAliases() == null) {
             List<TypeAlias> typeAliases = getTypeAliases();
             dataSettings.setTypeAliases(typeAliases);
@@ -139,10 +153,20 @@ public class GitCommitMessageHelperSettings implements PersistentStateComponent<
     }
 
     @NotNull
+    private static List<JiraKeyAlias> getJiraKeyAliases() {
+        List<JiraKeyAlias> jiraKeyAliases = new LinkedList<>();
+        jiraKeyAliases.add(new JiraKeyAlias("XBD", "글로벌 체크아웃"));
+        jiraKeyAliases.add(new JiraKeyAlias("GCD", "글로벌 체크아웃"));
+        jiraKeyAliases.add(new JiraKeyAlias("DBTS", "글로벌 체크아웃"));
+        return jiraKeyAliases;
+    }
+
+
+    @NotNull
     private static List<TypeAlias> getTypeAliases() {
         List<TypeAlias> typeAliases = new LinkedList<>();
         // default init i18n
-        typeAliases.add(new TypeAlias("feat", PluginBundle.get("feat.description")));
+        typeAliases.add(new TypeAlias("feature", PluginBundle.get("feat.description")));
         typeAliases.add(new TypeAlias("fix", PluginBundle.get("fix.description")));
         typeAliases.add(new TypeAlias("docs", PluginBundle.get("docs.description")));
         typeAliases.add(new TypeAlias("style", PluginBundle.get("style.description")));

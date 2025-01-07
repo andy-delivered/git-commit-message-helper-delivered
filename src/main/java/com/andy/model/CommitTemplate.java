@@ -7,13 +7,31 @@ package com.andy.model;
  **/
 public class CommitTemplate {
 
+    private String jiraKey;
+
+    private String jiraKeyNumber;
     private String type;
-    private String scope;
     private String subject;
     private String body;
     private String changes;
     private String closes;
     private String skipCi;
+
+    public String getJiraKey() {
+        return jiraKey;
+    }
+
+    public void setJiraKey(String jiraKey) {
+        this.jiraKey = jiraKey;
+    }
+
+    public String getJiraKeyNumber() {
+        return jiraKeyNumber;
+    }
+
+    public void setJiraKeyNumber(String jiraKeyNumber) {
+        this.jiraKeyNumber = jiraKeyNumber;
+    }
 
     public String getType() {
         return type;
@@ -21,14 +39,6 @@ public class CommitTemplate {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
     }
 
     public String getSubject() {

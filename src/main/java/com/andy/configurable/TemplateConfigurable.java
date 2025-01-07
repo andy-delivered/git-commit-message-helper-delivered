@@ -30,7 +30,7 @@ public class TemplateConfigurable implements SearchableConfigurable {
     @NotNull
     @Override
     public String getId() {
-        return "plugins.gitcommitmessagehelper.template";
+        return "plugins.gitcommitmessagehelperjira.template";
     }
 
 
@@ -47,7 +47,7 @@ public class TemplateConfigurable implements SearchableConfigurable {
     @Nullable
     @Override
     public String getHelpTopic() {
-        return "help.gitcommitmessagehelper.configuration";
+        return "help.gitcommitmessagehelperjira.configuration";
     }
 
     @Nls(capitalization = Nls.Capitalization.Title)

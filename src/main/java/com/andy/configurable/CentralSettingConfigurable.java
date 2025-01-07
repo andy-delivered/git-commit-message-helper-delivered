@@ -23,7 +23,7 @@ public class CentralSettingConfigurable implements SearchableConfigurable {
 
     @Override
     public @NotNull @NonNls String getId() {
-        return "plugins.gitcommitmessagehelper";
+        return "plugins.gitcommitmessagehelperjira";
     }
 
     @Nullable
@@ -54,6 +54,6 @@ public class CentralSettingConfigurable implements SearchableConfigurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "GitCommitMessageHelper";
+        return "Git Commit Message Helper Jira";
     }
 }

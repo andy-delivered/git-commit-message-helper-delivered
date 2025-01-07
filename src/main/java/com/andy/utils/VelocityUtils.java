@@ -35,8 +35,9 @@ public class VelocityUtils {
     public static String convert(String template, CommitTemplate commitTemplate) throws TemplateConvertException {
         StringWriter writer = new StringWriter();
         VelocityContext velocityContext = new VelocityContext();
+        velocityContext.put("jiraKey", commitTemplate.getJiraKey());
+        velocityContext.put("jiraKeyNumber", commitTemplate.getJiraKeyNumber());
         velocityContext.put("type", commitTemplate.getType());
-        velocityContext.put("scope", commitTemplate.getScope());
         velocityContext.put("subject", commitTemplate.getSubject());
         velocityContext.put("body", commitTemplate.getBody());
         velocityContext.put("changes", commitTemplate.getChanges());
@@ -60,7 +61,6 @@ public class VelocityUtils {
         velocityContext.put("setting.template.description.tip", PluginBundle.get("setting.template.description.tip"));
         velocityContext.put("setting.template.description.predefined.tip", PluginBundle.get("setting.template.description.predefined.tip"));
         velocityContext.put("setting.template.description.type", PluginBundle.get("setting.template.description.type"));
-        velocityContext.put("setting.template.description.scope", PluginBundle.get("setting.template.description.scope"));
         velocityContext.put("setting.template.description.subject", PluginBundle.get("setting.template.description.subject"));
         velocityContext.put("setting.template.description.body", PluginBundle.get("setting.template.description.body"));
         velocityContext.put("setting.template.description.changes", PluginBundle.get("setting.template.description.changes"));

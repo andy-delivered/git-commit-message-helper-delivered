@@ -3,7 +3,9 @@ package com.andy.ui.commit;
 import com.andy.localization.PluginBundle;
 import com.andy.model.CentralSettings;
 import com.andy.model.CommitTemplate;
+import com.andy.model.JiraKeyAlias;
 import com.andy.model.TypeAlias;
+import com.andy.model.enums.JiraKeyDisplayStyleEnum;
 import com.andy.model.enums.TypeDisplayStyleEnum;
 import com.andy.storage.GitCommitMessageHelperSettings;
 import com.intellij.ide.ui.laf.darcula.ui.DarculaEditorTextFieldBorder;
@@ -22,13 +24,20 @@ public class CommitPanel {
     private final GitCommitMessageHelperSettings settings;
     private JPanel mainPanel;
     private JComboBox<TypeAlias> changeType;
-    private JTextField changeScope;
+
+    private JComboBox<JiraKeyAlias> changeJiraKey;
     private JTextField shortDescription;
+
+    private JTextField jiraNumber;
     private EditorTextField longDescription;
     private EditorTextField breakingChanges;
     private JTextField closedIssues;
+
+    private JLabel jiraKeyDescriptionLabel;
+    private JLabel jiraNumberDescriptionLabel;
+
+    private JPanel JiraKeyPanel;
     private JLabel typeDescriptionLabel;
-    private JLabel scopeDescriptionLabel;
     private JLabel subjectDescriptionLabel;
     private JLabel bodyDescriptionLabel;
     private JLabel closedDescriptionLabel;
@@ -39,14 +48,16 @@ public class CommitPanel {
     private JCheckBox approveCheckBox;
     private JComboBox<String> skipCiComboBox;
     private JLabel skipCiLabel;
+    private JLabel jiraKeyLabel;
     private ButtonGroup buttonGroup;
 
 
     public CommitPanel(Project project, GitCommitMessageHelperSettings settings, CommitTemplate commitMessageTemplate) {
         this.settings = settings;
         // Personalized UI configuration
+        jiraKeyDescriptionLabel.setText(PluginBundle.get("commit.panel.jira.key.field"));
+        jiraNumberDescriptionLabel.setText(PluginBundle.get("commit.panel.jira.number.field"));
         typeDescriptionLabel.setText(PluginBundle.get("commit.panel.type.field"));
-        scopeDescriptionLabel.setText(PluginBundle.get("commit.panel.scope.field"));
         subjectDescriptionLabel.setText(PluginBundle.get("commit.panel.subject.field"));
         bodyDescriptionLabel.setText(PluginBundle.get("commit.panel.body.field"));
         closedDescriptionLabel.setText(PluginBundle.get("commit.panel.closes.field"));
@@ -77,6 +88,33 @@ public class CommitPanel {
     private void settingHidden(CommitTemplate commitMessageTemplate) {
         CentralSettings centralSettings = settings.getCentralSettings();
         List<TypeAlias> typeAliases = settings.getDateSettings().getTypeAliases();
+        List<JiraKeyAlias> jiraKeyAliases = settings.getDateSettings().getJiraKeyAliases();
+
+        if(centralSettings.getHidden().getJiraKey()) {
+            jiraKeyDescriptionLabel.setVisible(false);
+            jiraKeyLabel.setVisible(false);
+        } else {
+            if (centralSettings.getJiraKeyDisplayStyle() == JiraKeyDisplayStyleEnum.CHECKBOX) {
+                changeJiraKey = new ComboBox<>();
+                for (JiraKeyAlias jiraKeyAlias : jiraKeyAliases) {
+                    changeJiraKey.addItem(jiraKeyAlias);
+                }
+                if (commitMessageTemplate != null) {
+                    settings.getDateSettings().getJiraKeyAliases().stream()
+                            .filter(jiraKeyAlias -> jiraKeyAlias.getKey().equals(commitMessageTemplate.getJiraKey()))
+                            .findFirst()
+                            .ifPresent(jiraKeyAlias ->
+                                    changeJiraKey.setSelectedItem(jiraKeyAlias)
+                            );
+                }
+                JiraKeyPanel.add(changeJiraKey);
+            }
+        }
+
+        if (centralSettings.getHidden().getJiraKeyNumber()) {
+            jiraNumberDescriptionLabel.setVisible(false);
+            jiraNumber.setVisible(false);
+        }
         if (centralSettings.getHidden().getType()) {
             typeDescriptionLabel.setVisible(false);
             typePanel.setVisible(false);
@@ -117,7 +155,8 @@ public class CommitPanel {
                         }
                     }
                 }
-            } else if (centralSettings.getTypeDisplayStyle() == TypeDisplayStyleEnum.MIXING) {
+            }
+            else if (centralSettings.getTypeDisplayStyle() == TypeDisplayStyleEnum.MIXING) {
                 typePanel.setLayout(new GridLayout(0, 1));
                 changeType = new ComboBox<>();
                 buttonGroup = new ButtonGroup();
@@ -183,10 +222,7 @@ public class CommitPanel {
                 typePanel.add(changeType);
             }
         }
-        if (centralSettings.getHidden().getScope()) {
-            scopeDescriptionLabel.setVisible(false);
-            changeScope.setVisible(false);
-        }
+
         if (centralSettings.getHidden().getBody()) {
             bodyDescriptionLabel.setVisible(false);
             longDescriptionScrollPane.setVisible(false);
@@ -222,7 +258,7 @@ public class CommitPanel {
         }
         if (commitMessageTemplate != null) {
             // with cache init
-            changeScope.setText(commitMessageTemplate.getScope());
+            jiraNumber.setText(commitMessageTemplate.getJiraKeyNumber());
             shortDescription.setText(commitMessageTemplate.getSubject());
             longDescription.setText(commitMessageTemplate.getBody());
             breakingChanges.setText(commitMessageTemplate.getChanges());
@@ -233,15 +269,21 @@ public class CommitPanel {
 
     private void computePanelHeight() {
         int height = 0;
+
+        if (changeJiraKey != null) {
+            height += 33;
+        }
+        if (!settings.getCentralSettings().getHidden().getJiraKeyNumber()) {
+            height += 33;
+        }
+
         if (changeType != null) {
             height += 33;
         }
         if (buttonGroup != null) {
             height += 33 * buttonGroup.getButtonCount();
         }
-        if (!settings.getCentralSettings().getHidden().getScope()) {
-            height += 33;
-        }
+
         if (!settings.getCentralSettings().getHidden().getSubject()) {
             height += 33;
         }
@@ -263,6 +305,15 @@ public class CommitPanel {
     }
 
     CommitMessage getCommitMessage(GitCommitMessageHelperSettings settings) {
+
+        JiraKeyAlias jiraKey = new JiraKeyAlias();
+        if (settings.getCentralSettings().getJiraKeyDisplayStyle() == JiraKeyDisplayStyleEnum.CHECKBOX) {
+            if (changeJiraKey != null) {
+                if (changeJiraKey.getSelectedItem() != null) {
+                    jiraKey = ((JiraKeyAlias) Objects.requireNonNull(changeJiraKey.getSelectedItem()));
+                }
+            }
+        }
         TypeAlias type = new TypeAlias();
         if (settings.getCentralSettings().getTypeDisplayStyle() == TypeDisplayStyleEnum.CHECKBOX) {
             if (changeType != null) {
@@ -300,8 +351,9 @@ public class CommitPanel {
         }
         return new CommitMessage(
                 settings,
+                jiraKey,
+                jiraNumber.getText().trim(),
                 type,
-                changeScope.getText().trim(),
                 shortDescription.getText().trim(),
                 longDescription.getText().trim(),
                 closedIssues.getText().trim(),
@@ -312,6 +364,19 @@ public class CommitPanel {
 
     CommitTemplate getCommitMessageTemplate() {
         CommitTemplate commitTemplate = new CommitTemplate();
+
+
+        if(settings.getCentralSettings().getJiraKeyDisplayStyle() == JiraKeyDisplayStyleEnum.CHECKBOX){
+            if (changeJiraKey != null) {
+                if (changeJiraKey.getSelectedItem() != null) {
+                    commitTemplate.setJiraKey(((JiraKeyAlias) Objects.requireNonNull(changeJiraKey.getSelectedItem())).getKey());
+                }
+            }
+        }
+
+
+        commitTemplate.setJiraKeyNumber(jiraNumber.getText().trim());
+
         if (settings.getCentralSettings().getTypeDisplayStyle() == TypeDisplayStyleEnum.CHECKBOX) {
             if (changeType != null) {
                 if (changeType.getSelectedItem() != null) {
@@ -347,7 +412,6 @@ public class CommitPanel {
 
         }
         commitTemplate.setSkipCi(skipCi.trim());
-        commitTemplate.setScope(changeScope.getText().trim());
         commitTemplate.setSubject(shortDescription.getText().trim());
         commitTemplate.setBody(longDescription.getText().trim());
         commitTemplate.setChanges(breakingChanges.getText().trim());

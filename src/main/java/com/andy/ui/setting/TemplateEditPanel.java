@@ -29,6 +29,9 @@ import java.util.Optional;
 
 public class TemplateEditPanel {
     private final AliasTable aliasTable;
+
+    private final JiraAliasTable jiraKeyAliasTable;
+
     private final Editor templateEditor;
     private final EditorTextField previewEditor;
     private final JEditorPane myDescriptionComponent;
@@ -36,6 +39,8 @@ public class TemplateEditPanel {
     private JPanel mainPanel;
     private JPanel templatePanel;
     private JPanel typeEditPanel;
+
+    private JPanel jiraKeyEditPanel;
     private JTabbedPane tabbedPane;
     private JLabel description;
     private JLabel descriptionLabel;
@@ -135,6 +140,24 @@ public class TemplateEditPanel {
                                     }
                                 }).createPanel(), BorderLayout.CENTER);
 
+
+        jiraKeyAliasTable = new JiraAliasTable();
+        jiraKeyEditPanel.add(
+                ToolbarDecorator.createDecorator(jiraKeyAliasTable)
+                        .setAddAction(button -> jiraKeyAliasTable.addAlias())
+                        .setRemoveAction(button -> jiraKeyAliasTable.removeSelectedAliases())
+                        .setEditAction(button -> jiraKeyAliasTable.editAlias())
+                        .setMoveUpAction(anActionButton -> jiraKeyAliasTable.moveUp())
+                        .setMoveDownAction(anActionButton -> jiraKeyAliasTable.moveDown())
+                        .addExtraAction
+                                (new AnActionButton("Reset Default Aliases", AllIcons.Actions.Rollback) {
+                                    @Override
+                                    public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+                                        jiraKeyAliasTable.resetDefaultAliases();
+                                    }
+                                }).createPanel(), BorderLayout.CENTER
+        );
+
         // Init data
         ApplicationManager.getApplication().runWriteAction(() -> {
             templateEditor.getDocument().setText(template);
@@ -156,11 +179,11 @@ public class TemplateEditPanel {
 
     private void showPreview() {
         CommitTemplate commitTemplate = new CommitTemplate();
+        if (scopeCheckBox.isSelected()) {
+            commitTemplate.setJiraKeyNumber("<jiraKeyNum>");
+        }
         if (typeCheckBox.isSelected()) {
             commitTemplate.setType("<type>");
-        }
-        if (scopeCheckBox.isSelected()) {
-            commitTemplate.setScope("<scope>");
         }
         if (subjectCheckBox.isSelected()) {
             commitTemplate.setSubject("<subject>");
@@ -193,6 +216,7 @@ public class TemplateEditPanel {
     public void reset(GitCommitMessageHelperSettings settings) {
         this.settings = settings.clone();
         aliasTable.reset(settings);
+        jiraKeyAliasTable.reset(settings);
         ApplicationManager.getApplication().runWriteAction(() ->
                 templateEditor.getDocument().setText(settings.getDateSettings().getTemplate())
         );

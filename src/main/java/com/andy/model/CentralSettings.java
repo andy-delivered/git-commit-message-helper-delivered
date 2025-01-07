@@ -1,8 +1,15 @@
 package com.andy.model;
 
+import com.andy.model.enums.JiraKeyDisplayStyleEnum;
 import com.andy.model.enums.TypeDisplayStyleEnum;
 
 public class CentralSettings {
+
+    private JiraKeyDisplayStyleEnum jiraKeyDisplayStyle;
+
+    private Integer jiraKeyDisplayNumber;
+
+    private String jiraKeyNumberDefaultValue;
 
     private TypeDisplayStyleEnum typeDisplayStyle;
 
@@ -15,6 +22,22 @@ public class CentralSettings {
     private Boolean skipCiComboboxEnable;
 
     private Hidden hidden;
+
+    public JiraKeyDisplayStyleEnum getJiraKeyDisplayStyle() {
+        return jiraKeyDisplayStyle;
+    }
+
+    public Integer getJiraKeyDisplayNumber() {
+        return jiraKeyDisplayNumber;
+    }
+
+    public void setJiraKeyDisplayNumber(Integer jiraKeyDisplayNumber) {
+        this.jiraKeyDisplayNumber = jiraKeyDisplayNumber;
+    }
+
+    public void setJiraKeyDisplayStyle(JiraKeyDisplayStyleEnum jiraKeyDisplayStyle) {
+        this.jiraKeyDisplayStyle = jiraKeyDisplayStyle;
+    }
 
 
     public TypeDisplayStyleEnum getTypeDisplayStyle() {
@@ -31,6 +54,14 @@ public class CentralSettings {
 
     public void setTypeDisplayNumber(Integer typeDisplayNumber) {
         this.typeDisplayNumber = typeDisplayNumber;
+    }
+
+    public String getJiraKeyNumberDefaultValue() {
+        return jiraKeyNumberDefaultValue;
+    }
+
+    public void setJiraKeyNumberDefaultValue(String jiraKeyNumberDefaultValue) {
+        this.jiraKeyNumberDefaultValue = jiraKeyNumberDefaultValue;
     }
 
     public String getSkipCiDefaultValue() {
@@ -66,8 +97,10 @@ public class CentralSettings {
     }
 
     public static class Hidden {
+
+        private Boolean jiraKey;
+        private Boolean jiraKeyNumber;
         private Boolean type;
-        private Boolean scope;
         private Boolean subject;
         private Boolean body;
         private Boolean changes;
@@ -82,12 +115,20 @@ public class CentralSettings {
             this.type = type;
         }
 
-        public Boolean getScope() {
-            return scope;
+        public Boolean getJiraKey() {
+            return jiraKey;
         }
 
-        public void setScope(Boolean scope) {
-            this.scope = scope;
+        public void setJiraKey(Boolean jiraKey) {
+            this.jiraKey = jiraKey;
+        }
+
+        public Boolean getJiraKeyNumber() {
+            return jiraKeyNumber;
+        }
+
+        public void setJiraKeyNumber(Boolean jiraKeyNumber) {
+            this.jiraKeyNumber = jiraKeyNumber;
         }
 
         public Boolean getSubject() {

@@ -2,6 +2,7 @@ package com.andy.ui.central;
 
 import com.andy.localization.PluginBundle;
 import com.andy.model.DataSettings;
+import com.andy.model.enums.JiraKeyDisplayStyleEnum;
 import com.andy.model.enums.TypeDisplayStyleEnum;
 import com.andy.storage.GitCommitMessageHelperSettings;
 import com.intellij.ui.IdeBorderFactory;
@@ -15,8 +16,14 @@ public class CentralSettingPanel {
     protected GitCommitMessageHelperSettings settings;
     private JPanel mainPanel;
     private JPanel hiddenPanel;
+
+    private JPanel jiraKeyPanel;
     private JPanel typePanel;
     private JPanel skipCiPanel;
+
+    private JRadioButton jiraKeyComboboxRadioButton;
+
+    private JBIntSpinner jiraKeyDisplayNumberSpinner;
     private JRadioButton typeComboboxRadioButton;
     private JRadioButton typeRadioRadioButton;
     private JRadioButton typeMixingRadioButton;
@@ -27,7 +34,8 @@ public class CentralSettingPanel {
 
     //********************* hidden *********************//
     private JCheckBox typeCheckBox;
-    private JCheckBox scopeCheckBox;
+
+    private JCheckBox JiraKeyNumberCheckBox;
     private JCheckBox subjectCheckBox;
     private JCheckBox bodyCheckBox;
     private JCheckBox changesCheckBox;
@@ -43,6 +51,7 @@ public class CentralSettingPanel {
         //Get setting
         this.settings = settings.clone();
         // Init  description
+        jiraKeyPanel.setBorder(IdeBorderFactory.createTitledBorder(PluginBundle.get("setting.central.type.panel.jira"), true));
         typePanel.setBorder(IdeBorderFactory.createTitledBorder(PluginBundle.get("setting.central.type.panel.title"), true));
         skipCiPanel.setBorder(IdeBorderFactory.createTitledBorder(PluginBundle.get("setting.central.skip.ci.panel.title"), true));
         hiddenPanel.setBorder(IdeBorderFactory.createTitledBorder(PluginBundle.get("setting.central.hidden.panel.title"), true));
@@ -66,6 +75,12 @@ public class CentralSettingPanel {
         for (String skipCi : skipCis) {
             skipCiComboBox.addItem(skipCi);
         }
+
+        jiraKeyComboboxRadioButton.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                jiraKeyDisplayNumberSpinner.setEnabled(false);
+            }
+        });
         // Init
         typeComboboxRadioButton.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -89,7 +104,11 @@ public class CentralSettingPanel {
 
     public GitCommitMessageHelperSettings getSettings() {
         // Type Display Style Option
+
         int number = typeDisplayNumberSpinner.getNumber();
+        if (jiraKeyComboboxRadioButton.isSelected()) {
+            settings.getCentralSettings().setJiraKeyDisplayStyle(JiraKeyDisplayStyleEnum.CHECKBOX);
+        }
         if (typeComboboxRadioButton.isSelected()) {
             settings.getCentralSettings().setTypeDisplayStyle(TypeDisplayStyleEnum.CHECKBOX);
         } else if (typeRadioRadioButton.isSelected()) {
@@ -107,7 +126,7 @@ public class CentralSettingPanel {
         // Hidden Option
         // settings.getCentralSettings().getHidden().setSubject(subjectCheckBox.isSelected());
         settings.getCentralSettings().getHidden().setType(typeCheckBox.isSelected());
-        settings.getCentralSettings().getHidden().setScope(scopeCheckBox.isSelected());
+        settings.getCentralSettings().getHidden().setJiraKeyNumber(JiraKeyNumberCheckBox.isSelected());
         settings.getCentralSettings().getHidden().setBody(bodyCheckBox.isSelected());
         settings.getCentralSettings().getHidden().setChanges(changesCheckBox.isSelected());
         settings.getCentralSettings().getHidden().setClosed(closedCheckBox.isSelected());
@@ -123,6 +142,10 @@ public class CentralSettingPanel {
 
     private void initComponent(GitCommitMessageHelperSettings settings) {
         // Type Display Style Option
+
+        jiraKeyComboboxRadioButton.setSelected(true);
+        jiraKeyDisplayNumberSpinner.setNumber(settings.getCentralSettings().getJiraKeyDisplayNumber());
+
         if (settings.getCentralSettings().getTypeDisplayStyle().equals(TypeDisplayStyleEnum.CHECKBOX)) {
             typeComboboxRadioButton.setSelected(true);
         } else if (settings.getCentralSettings().getTypeDisplayStyle().equals(TypeDisplayStyleEnum.RADIO)) {
@@ -139,7 +162,7 @@ public class CentralSettingPanel {
         skipCiEnableCheckBox.setSelected(settings.getCentralSettings().getSkipCiComboboxEnable());
         // Hidden Option
         typeCheckBox.setSelected(settings.getCentralSettings().getHidden().getType());
-        scopeCheckBox.setSelected(settings.getCentralSettings().getHidden().getScope());
+        JiraKeyNumberCheckBox.setSelected(settings.getCentralSettings().getHidden().getJiraKeyNumber());
         //subjectCheckBox.setSelected(settings.getCentralSettings().getHidden().getSubject());
         subjectCheckBox.setEnabled(false);
         bodyCheckBox.setSelected(settings.getCentralSettings().getHidden().getBody());
@@ -176,7 +199,7 @@ public class CentralSettingPanel {
         // Hidden Option
         else if (typeCheckBox.isSelected() != data.getCentralSettings().getHidden().getType()) {
             isModified = true;
-        } else if (scopeCheckBox.isSelected() != data.getCentralSettings().getHidden().getScope()) {
+        }else if (JiraKeyNumberCheckBox.isSelected() != data.getCentralSettings().getHidden().getJiraKeyNumber()) {
             isModified = true;
         } else if (bodyCheckBox.isSelected() != data.getCentralSettings().getHidden().getBody()) {
             isModified = true;

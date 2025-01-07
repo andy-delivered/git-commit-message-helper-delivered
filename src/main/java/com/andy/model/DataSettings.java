@@ -9,6 +9,8 @@ import java.util.List;
  **/
 public class DataSettings {
     private String template;
+
+    private List<JiraKeyAlias> jiraKeyAliases;
     private List<TypeAlias> typeAliases;
     private List<String> skipCis;
 
@@ -18,6 +20,14 @@ public class DataSettings {
 
     public void setTemplate(String template) {
         this.template = template;
+    }
+
+    public List<JiraKeyAlias> getJiraKeyAliases() {
+        return jiraKeyAliases;
+    }
+
+    public void setJiraKeyAliases(List<JiraKeyAlias> jiraKeyAliases) {
+        this.jiraKeyAliases = jiraKeyAliases;
     }
 
     public List<TypeAlias> getTypeAliases() {

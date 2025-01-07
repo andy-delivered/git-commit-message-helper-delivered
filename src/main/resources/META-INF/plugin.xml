@@ -1,8 +1,8 @@
 <idea-plugin>
     <id>commit-message-helper-idea-plugin</id>
-    <name>Git Commit Message Helper</name>
-    <vendor email="fulinlin9527@outlook.com" url="https://github.com/AutismSuperman">FuLinLin</vendor>
-    <version>1.4.1</version>
+    <name>Git Commit Message Helper Jira</name>
+    <vendor email="andy@delivered" url="https://github.com/andy-delivered">Andy</vendor>
+    <version>1.4.3</version>
 
 
     <description><![CDATA[<p>Description notes will be filled by gradle build</p>]]></description>
@@ -29,14 +29,14 @@
                 serviceImplementation="com.andy.storage.GitCommitMessageStorage"/>
 
         <applicationConfigurable groupId="null"
-                                 id="plugins.gitcommitmessagehelper"
-                                 displayName="GitCommitMessageHelper"
+                                 id="plugins.gitcommitmessagehelperjira"
+                                 displayName="GitCommitMessageHelperJira"
                                  instance="com.andy.configurable.CentralSettingConfigurable"/>
 
         <applicationConfigurable
                 instance="com.andy.configurable.TemplateConfigurable"
-                id="plugins.gitcommitmessagehelper.template"
-                groupId="plugins.gitcommitmessagehelper" displayName="Commit Template"/>
+                id="plugins.gitcommitmessagehelperjira.template"
+                groupId="plugins.gitcommitmessagehelperjira" displayName="Commit Template"/>
 
     </extensions>
 

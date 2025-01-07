@@ -1,6 +1,7 @@
 package com.andy.ui.commit;
 
 import com.andy.model.CommitTemplate;
+import com.andy.model.JiraKeyAlias;
 import com.andy.model.TypeAlias;
 import com.andy.storage.GitCommitMessageHelperSettings;
 import com.andy.utils.VelocityUtils;
@@ -15,8 +16,9 @@ public class CommitMessage {
     private final String content;
 
     public CommitMessage(GitCommitMessageHelperSettings settings,
+                         JiraKeyAlias jiraKeyAlias,
+                         String jiraKeyNumber,
                          TypeAlias typeAlias,
-                         String changeScope,
                          String shortDescription,
                          String longDescription,
                          String closedIssues,
@@ -25,8 +27,9 @@ public class CommitMessage {
     ) {
         this.content = buildContent(
                 settings,
+                jiraKeyAlias,
+                jiraKeyNumber,
                 typeAlias,
-                changeScope,
                 shortDescription,
                 longDescription,
                 breakingChanges,
@@ -36,8 +39,9 @@ public class CommitMessage {
     }
 
     private String buildContent(GitCommitMessageHelperSettings settings,
+                                JiraKeyAlias jiraKeyAlias,
+                                String jiraKeyNumber,
                                 TypeAlias typeAlias,
-                                String changeScope,
                                 String shortDescription,
                                 String longDescription,
                                 String breakingChanges,
@@ -46,14 +50,23 @@ public class CommitMessage {
     ) {
 
         CommitTemplate commitTemplate = new CommitTemplate();
+
+        if (jiraKeyAlias != null) {
+            if (StringUtils.isNotBlank(jiraKeyAlias.getKey())) {
+                commitTemplate.setJiraKey(jiraKeyAlias.getKey());
+            }
+        }
+
+        if (StringUtils.isNotBlank(jiraKeyNumber)) {
+            commitTemplate.setJiraKeyNumber(jiraKeyNumber);
+        }
+
         if (typeAlias != null) {
             if (StringUtils.isNotBlank(typeAlias.getTitle())) {
                 commitTemplate.setType(typeAlias.getTitle());
             }
         }
-        if (StringUtils.isNotBlank(changeScope)) {
-            commitTemplate.setScope(changeScope);
-        }
+
         if (StringUtils.isNotBlank(shortDescription)) {
             commitTemplate.setSubject(shortDescription);
         }
